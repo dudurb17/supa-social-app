@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   View,
+  AppState,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import ScreenWrapper from "../components/ScreenWrapper";
@@ -16,6 +17,15 @@ import { hp, wp } from "../helpers/common";
 import { theme } from "../constants/theme";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { supabase } from "../lib/supabase";
+
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
 
 export default function SignUp() {
   const router = useRouter();
@@ -24,10 +34,31 @@ export default function SignUp() {
   const passwordRef = useRef();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Sing Up", "please fill all the fields!");
       return;
+    }
+
+    let name = nameRef.current.trim();
+    let email = emailRef.current.trim();
+    let password = passwordRef.current.trim();
+
+    setLoading(true);
+
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    setLoading(false);
+
+    console.log("session: " + session.data());
+    console.log("error: " + error);
+    if (error) {
+      Alert.alert("Sing up", error.message);
     }
   };
   return (
