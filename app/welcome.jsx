@@ -8,9 +8,6 @@ import Button from "../components/Button";
 import { useRouter } from "expo-router";
 
 export default function Welcome() {
-  const apiUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  console.log("testge");
-  console.log(apiUrl);
   const router = useRouter();
   return (
     <ScreenWrapper bg="white">
