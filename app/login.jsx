@@ -16,6 +16,7 @@ import { hp, wp } from "../helpers/common";
 import { theme } from "../constants/theme";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const router = useRouter();
@@ -23,10 +24,24 @@ export default function Login() {
   const passwordRef = useRef();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Login", "please fill all the fields!");
       return;
+    }
+    let email = emailRef.current.trim();
+    let password = passwordRef.current.trim();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setLoading(false);
+
+    // console.log("error: ", error);
+    if (error) {
+      Alert.alert("Login", error.message);
     }
   };
   return (
