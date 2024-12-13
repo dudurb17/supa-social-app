@@ -52,11 +52,16 @@ export default function SignUp() {
     } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name,
+        },
+      },
     });
     setLoading(false);
 
-    console.log(session);
-    console.log("error: " + error);
+    // console.log(session);
+    // console.log("error: " + error);
     if (error) {
       Alert.alert("Sing up", error.message);
     }
