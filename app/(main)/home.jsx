@@ -23,7 +23,7 @@ export default function Home() {
     }
   };
   return (
-    <ScreenWrapper>
+    <ScreenWrapper bg="white">
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>LinkUp</Text>
@@ -46,7 +46,7 @@ export default function Home() {
             </Pressable>
             <Pressable onPress={() => router.push("profile")}>
               <Avatar
-                uri={user?.iamge}
+                uri={user?.image}
                 size={hp(4.3)}
                 rounded={theme.radius.sm}
                 style={{ borderWidth: 2 }}
