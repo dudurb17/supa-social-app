@@ -55,7 +55,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <Button title="logout" onPress={onLogout} />
+      {/* <Button title="logout" onPress={onLogout} /> */}
     </ScreenWrapper>
   );
 }
