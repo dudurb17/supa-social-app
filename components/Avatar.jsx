@@ -5,12 +5,12 @@ import { theme } from "../constants/theme";
 import { Image } from "expo-image";
 import { getUserImageSrc } from "../services/imageService";
 
-export default function Avatar(
-  uri = 0,
+export default function Avatar({
+  uri,
   size = hp(4.5),
   rounded = theme.radius.md,
-  style = {}
-) {
+  style = {},
+}) {
   return (
     <Image
       source={getUserImageSrc(uri)}
@@ -18,7 +18,6 @@ export default function Avatar(
       style={[
         styles.avatar,
         { height: size, width: size, borderRadius: rounded },
-        style,
       ]}
     />
   );

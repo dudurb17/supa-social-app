@@ -5,7 +5,7 @@ import BackButton from "./BackButton";
 import { hp } from "../helpers/common";
 import { theme } from "../constants/theme";
 
-export default function Header({ title, showBackButton = false, mb = 10 }) {
+export default function Header({ title, showBackButton = true, mb = 10 }) {
   const router = useRouter();
   return (
     <View style={[styles.container, { marginBottom: mb }]}>

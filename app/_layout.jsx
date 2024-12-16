@@ -20,7 +20,7 @@ function MainLayout() {
 
       if (session) {
         setAuth(session?.user);
-        updateUserData(session.user);
+        updateUserData(session.user, session.user.email);
         router.replace("/home");
       } else {
         setAuth(null);
@@ -29,10 +29,10 @@ function MainLayout() {
     });
   }, []);
 
-  const updateUserData = async (user) => {
+  const updateUserData = async (user, email) => {
     let res = await getUserData(user.id);
     if (res.success) {
-      setUserData(res.data);
+      setUserData({ ...res.data, email });
     }
   };
   return <Stack screenOptions={{ headerShown: false }} />;
