@@ -6,7 +6,7 @@ import { hp } from "../helpers/common";
 export default function Input(props) {
   return (
     <View
-      style={[styles.container, props.containerStyles && props.containerStyles]}
+      style={[styles.container, props.contianerStyles && props.containerStyles]}
     >
       {props.icon && props.icon}
       <TextInput
