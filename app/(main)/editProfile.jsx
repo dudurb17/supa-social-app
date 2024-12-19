@@ -1,9 +1,11 @@
 import {
   Alert,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -21,6 +23,7 @@ import Button from "../../components/Button";
 import { updateUser } from "../../services/userService";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function EditProfile() {
   const { user: currentUser, setUserData } = useAuth();
@@ -121,6 +124,7 @@ export default function EditProfile() {
             />
             <Input
               placeholder="Enter your bio"
+              multilineStyle={{ height: hp(20), alignItems: "flex-start" }}
               value={user.bio}
               multiline={true}
               contianerStyles={styles.bio}
@@ -181,8 +185,8 @@ const styles = StyleSheet.create({
   },
   bio: {
     flexDirection: "row",
-    height: hp(15),
+    height: hp(20),
     alignItems: "flex-start",
-    paddingVertical: 15,
+    paddingVertical: 40,
   },
 });
