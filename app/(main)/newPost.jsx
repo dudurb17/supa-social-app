@@ -6,14 +6,14 @@ import { hp, wp } from "../../helpers/common";
 import { theme } from "../../constants/theme";
 import Avatar from "../../components/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
-import RichTextEditor from "../../components/RichTextEditor";
 import { useRouter } from "expo-router";
+import Input from "../../components/Input";
 
 export default function NewPost() {
   const { user } = useAuth();
 
   const bodyRef = useRef("");
-  const editorRef = useRef(null);
+  const editorRef = useRef("");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(file);
@@ -31,9 +31,13 @@ export default function NewPost() {
           </View>
 
           <View style={styles.textEditor}>
-            <RichTextEditor
-              editorRef={editorRef}
-              onChange={(body) => (bodyRef.current = body)}
+            <Input
+              placeholder="What's on your mind?"
+              multilineStyle={{ height: hp(20), alignItems: "flex-start" }}
+              value={editorRef}
+              multiline={true}
+              contianerStyles={styles.bio}
+              onChangeText={(value) => (editorRef.current = value)}
             />
           </View>
         </ScrollView>
