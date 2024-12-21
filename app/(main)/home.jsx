@@ -14,7 +14,7 @@ export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
 
-  console.log("user: ", user);
+  // console.log("user: ", user);
 
   const onLogout = async () => {
     const { error } = await supabase.auth.signOut();

@@ -23,7 +23,6 @@ import Button from "../../components/Button";
 import { updateUser } from "../../services/userService";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function EditProfile() {
   const { user: currentUser, setUserData } = useAuth();

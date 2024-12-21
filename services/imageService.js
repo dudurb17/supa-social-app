@@ -53,5 +53,5 @@ export const uploadFile= async(folderName, fileUri, isImage=true)=>{
 }
 
 export const getFilePath = (folderName, isImage) =>{
-  return `/${folderName}/${(new Date()).getDate()}${isImage? 'png': 'mp4'}`;
+  return `/${folderName}/${(new Date()).getMilliseconds()}${isImage? 'png': 'mp4'}`;
 }
