@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { theme } from "../constants/theme";
 import { hp, wp } from "../helpers/common";
 import Avatar from "./Avatar";
@@ -8,13 +8,16 @@ import Icon from "../assets/icons";
 import { Image } from "expo-image";
 import { getSupabaseFileUrl } from "@/services/imageService";
 import { Video } from "expo-av";
+import { createPostLike, removePostLike } from "../services/postService";
 
 export default function PostCard({
   item,
-  currrentUser,
+  currentUser,
   router,
   hasShadow = true,
 }) {
+  const [likes, setLikes] = useState();
+  // console.log(currentUser);
   const shadowStyle = {
     shadowOffset: {
       width: 0,
@@ -24,12 +27,42 @@ export default function PostCard({
     shadowRadius: 6,
     elevation: 1,
   };
+  useEffect(() => {
+    setLikes(item.postLikes);
+  }, []);
+
+  const onLike = async () => {
+    if (liked) {
+      let updatedLike = likes.filter((like) => like.userId != currentUser.id);
+      setLikes([...updatedLike]);
+      let res = await removePostLike(item.id, currentUser.id);
+      // console.log("res: ", res);
+      if (!res.success) {
+        Alert.alert("Post", "Something went wrong!");
+      }
+    } else {
+      let data = {
+        userId: currentUser.id,
+        postId: item.id,
+      };
+      setLikes([...likes, data]);
+      let res = await createPostLike(data);
+      // console.log("res: ", res);
+      if (!res.success) {
+        Alert.alert("Post", "Something went wrong!");
+      }
+    }
+  };
 
   const openPostDetails = () => {};
 
+  const onShare = async () => {};
+
   const createAt = moment(item?.created_at).format("MMM D");
-  const likes = [];
-  const liked = true;
+  const liked = likes?.filter((like) => like.userId == currentUser.id)[0]
+    ? true
+    : false;
+  // console.log("post item", item);
   return (
     <View style={[styles.container, hasShadow && shadowStyle]}>
       <View style={styles.header}>
@@ -79,7 +112,7 @@ export default function PostCard({
       </View>
       <View style={styles.footer}>
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onLike}>
             <Icon
               name="heart"
               size={24}
@@ -87,19 +120,18 @@ export default function PostCard({
               color={liked ? theme.colors.rose : theme.colors.textLight}
             />
           </TouchableOpacity>
-          <Text style={styles.count}>{likes.length}</Text>
+          <Text style={styles.count}>{likes?.length}</Text>
         </View>
         <View style={styles.footerButton}>
           <TouchableOpacity>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
-          <Text style={styles.count}>{likes.length}</Text>
+          <Text style={styles.count}>{0}</Text>
         </View>
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onShare}>
             <Icon name="share" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
-          <Text style={styles.count}>{likes.length}</Text>
         </View>
       </View>
     </View>
