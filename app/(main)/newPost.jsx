@@ -89,9 +89,9 @@ export default function NewPost() {
 
     let response = await createOrUpdatePost(data);
     setLoading(false);
-    console.log(response);
 
     if (response.success) {
+      setFile(null);
       bodyRef.current = "";
       router.back();
     } else {

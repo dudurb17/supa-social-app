@@ -1,5 +1,12 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import {
+  Alert,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import Button from "../../components/Button";
 import { useAuth } from "../../contexts/AuthContext";
@@ -9,12 +16,31 @@ import { theme } from "../../constants/theme";
 import Icon from "../../assets/icons";
 import { useRouter } from "expo-router";
 import Avatar from "../../components/Avatar";
+import PostCard from "../../components/PostCard";
+import { fetchPosts } from "../../services/postService";
+import Loading from "../../components/Loading";
 
+var limit = 0;
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
 
   // console.log("user: ", user);
+
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  const getPosts = async () => {
+    limit = limit + 10;
+    console.log("fetching post: ", limit);
+    let res = await fetchPosts(limit);
+    if (res.success) {
+      setPosts(res.data);
+    }
+  };
 
   const onLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -54,6 +80,20 @@ export default function Home() {
             </Pressable>
           </View>
         </View>
+        <FlatList
+          data={posts}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.listStyle}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <PostCard item={item} currentUser={user} router={router} />
+          )}
+          ListFooterComponent={
+            <View style={{ marginVertical: posts.length == 0 ? 200 : 30 }}>
+              <Loading />
+            </View>
+          }
+        />
       </View>
       {/* <Button title="logout" onPress={onLogout} /> */}
     </ScreenWrapper>
