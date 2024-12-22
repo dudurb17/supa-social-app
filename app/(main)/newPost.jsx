@@ -29,7 +29,6 @@ export default function NewPost() {
   const { user } = useAuth();
 
   const bodyRef = useRef("");
-  const editorRef = useRef("");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(file);
@@ -90,9 +89,9 @@ export default function NewPost() {
 
     let response = await createOrUpdatePost(data);
     setLoading(false);
+    console.log(response);
 
     if (response.success) {
-      setFile(null);
       bodyRef.current = "";
       router.back();
     } else {
@@ -117,10 +116,10 @@ export default function NewPost() {
             <Input
               placeholder="What's on your mind?"
               multilineStyle={{ height: hp(20), alignItems: "flex-start" }}
-              value={editorRef}
+              value={bodyRef}
               multiline={true}
               contianerStyles={styles.bio}
-              onChangeText={(value) => (editorRef.current = value)}
+              onChangeText={(value) => (bodyRef.current = value)}
             />
           </View>
 

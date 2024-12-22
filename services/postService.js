@@ -24,7 +24,7 @@ export const createOrUpdatePost = async (post)=>{
       console.log('createPost error', error)
       return {sucess: false, msg:'Could not create your post'}
     }
-    return {sucess:true, msg:'Could not create your post'}
+    return {success:true, data:data}
 
     
   } catch (error) {
