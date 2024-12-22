@@ -15,8 +15,6 @@ export default function PostCard({
   router,
   hasShadow = true,
 }) {
-  console.log("post item", item);
-
   const shadowStyle = {
     shadowOffset: {
       width: 0,
