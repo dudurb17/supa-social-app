@@ -1,5 +1,6 @@
 import {
   Alert,
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -13,7 +14,7 @@ import ScreenWrapper from "../../components/ScreenWrapper";
 import { hp, wp } from "../../helpers/common";
 import { theme } from "../../constants/theme";
 import Header from "../../components/Header";
-import Image from "../../assets/icons/Image";
+// import Image from "../../assets/icons/Image";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImageSrc, uploadFile } from "../../services/imageService";
 import Icon from "../../assets/icons";
@@ -86,8 +87,11 @@ export default function EditProfile() {
   };
 
   let imageSource =
-    user.image && typeof user.image === "object" ? user.image.uri : user.image;
-  console.log(imageSource);
+    user.image && typeof user.image === "object"
+      ? { uri: user.image.uri }
+      : getUserImageSrc(user.image);
+
+  console.log("teste", imageSource);
   return (
     <ScreenWrapper bg="white">
       <View style={styles.contianer}>
@@ -95,7 +99,7 @@ export default function EditProfile() {
           <Header title="Edit Profile" />
           <View style={styles.form}>
             <View style={styles.avatarContainer}>
-              <Avatar uri={imageSource} size={hp(14)} style={styles.avatar} />
+              <Image source={imageSource} size={hp(14)} style={styles.avatar} />
               <Pressable style={styles.cameraIcon} onPress={onPickImage}>
                 <Icon name="camera" size={20} strokeWidth={2.5} />
               </Pressable>
