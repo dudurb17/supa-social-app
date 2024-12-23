@@ -19,6 +19,22 @@ export const getSupabaseFileUrl = filePath =>{
   return null
 }
 
+export const downloadFile = async (url)=>{
+  try {
+    const {uri} = await FileSystem.downloadAsync(url, getLocalFilePath(url))
+    return uri
+  } catch (error) {
+    return null  
+  }
+
+}
+
+export const getLocalFilePath = filePath =>{
+  let fileName = filePath.split('/').pop();
+  console.log(fileName)
+   return `${FileSystem.documentDirectory}${fileName}`;
+}
+
 export const uploadFile= async(folderName, fileUri, isImage=true)=>{
   try {
     let filaName = getFilePath(folderName, isImage);
@@ -53,5 +69,5 @@ export const uploadFile= async(folderName, fileUri, isImage=true)=>{
 }
 
 export const getFilePath = (folderName, isImage) =>{
-  return `/${folderName}/${(new Date()).getMilliseconds()}${isImage? 'png': 'mp4'}`;
+  return `/${folderName}/${(new Date()).getMilliseconds()}${isImage? '.png': '.mp4'}`;
 }

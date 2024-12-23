@@ -1,4 +1,11 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { theme } from "../constants/theme";
 import { hp, wp } from "../helpers/common";
@@ -9,6 +16,7 @@ import { Image } from "expo-image";
 import { getSupabaseFileUrl } from "@/services/imageService";
 import { Video } from "expo-av";
 import { createPostLike, removePostLike } from "../services/postService";
+import { downloadFile } from "../services/imageService";
 
 export default function PostCard({
   item,
@@ -56,7 +64,17 @@ export default function PostCard({
 
   const openPostDetails = () => {};
 
-  const onShare = async () => {};
+  const onShare = async () => {
+    let content = { message: item?.body };
+    console.log(item.file);
+
+    if (item.file) {
+      let url = await downloadFile(getSupabaseFileUrl(item?.file).uri);
+      console.log(url);
+      content.url = url;
+    }
+    Share.share(content);
+  };
 
   const createAt = moment(item?.created_at).format("MMM D");
   const liked = likes?.filter((like) => like.userId == currentUser.id)[0]
