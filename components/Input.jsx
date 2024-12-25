@@ -8,7 +8,7 @@ export default function Input(props) {
     <View
       style={[
         styles.container,
-        props.contianerStyles && props.containerStyles,
+        props.containerStyles && props.containerStyles,
         props.multilineStyle && props.multilineStyle,
       ]}
     >

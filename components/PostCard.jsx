@@ -17,15 +17,17 @@ import { getSupabaseFileUrl } from "@/services/imageService";
 import { Video } from "expo-av";
 import { createPostLike, removePostLike } from "../services/postService";
 import { downloadFile } from "../services/imageService";
+import Loading from "./Loading";
 
 export default function PostCard({
   item,
   currentUser,
   router,
   hasShadow = true,
+  showMoreIcon = true,
 }) {
   const [likes, setLikes] = useState();
-  // console.log(currentUser);
+  const [loading, setLoading] = useState(false);
   const shadowStyle = {
     shadowOffset: {
       width: 0,
@@ -36,21 +38,21 @@ export default function PostCard({
     elevation: 1,
   };
   useEffect(() => {
-    setLikes(item.postLikes);
+    setLikes(item?.postLikes);
   }, []);
 
   const onLike = async () => {
     if (liked) {
-      let updatedLike = likes.filter((like) => like.userId != currentUser.id);
+      let updatedLike = likes.filter((like) => like.userId != currentUser?.id);
       setLikes([...updatedLike]);
-      let res = await removePostLike(item.id, currentUser.id);
+      let res = await removePostLike(item.id, currentUser?.id);
       // console.log("res: ", res);
       if (!res.success) {
         Alert.alert("Post", "Something went wrong!");
       }
     } else {
       let data = {
-        userId: currentUser.id,
+        userId: currentUser?.id,
         postId: item.id,
       };
       setLikes([...likes, data]);
@@ -62,15 +64,18 @@ export default function PostCard({
     }
   };
 
-  const openPostDetails = () => {};
+  const openPostDetails = () => {
+    router.push({ pathname: "postDetails", params: { postId: item.id } });
+  };
 
   const onShare = async () => {
     let content = { message: item?.body };
-    console.log(item.file);
+    console.log(item?.file);
 
-    if (item.file) {
+    if (item?.file) {
+      setLoading(true);
       let url = await downloadFile(getSupabaseFileUrl(item?.file).uri);
-      console.log(url);
+      setLoading(false);
       content.url = url;
     }
     Share.share(content);
@@ -87,29 +92,31 @@ export default function PostCard({
         <View style={styles.userInfo}>
           <Avatar
             size={hp(4.5)}
-            uri={item.user.image}
+            uri={item?.user?.image}
             rounded={theme.radius.md}
           />
           <View style={{ gap: 2 }}>
-            <Text style={styles.userName}>{item.user.name}</Text>
+            <Text style={styles.userName}>{item?.user?.name}</Text>
             <Text style={styles.postTime}>{createAt}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={openPostDetails}>
-          <Icon
-            name="threeDotsHorizontal"
-            size={hp(3.4)}
-            stokeWidth={3}
-            color={theme.colors.text}
-          />
-        </TouchableOpacity>
+        {showMoreIcon && (
+          <TouchableOpacity onPress={openPostDetails}>
+            <Icon
+              name="threeDotsHorizontal"
+              size={hp(3.4)}
+              stokeWidth={3}
+              color={theme.colors.text}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.content}>
         <View style={styles.postBody}>
-          <Text>{item.body}</Text>
+          <Text>{item?.body}</Text>
         </View>
-        {item.file && item.file.includes("postImages") && (
+        {item?.file && item?.file.includes("postImages") && (
           <Image
             source={getSupabaseFileUrl(item.file)}
             transition={100}
@@ -118,7 +125,7 @@ export default function PostCard({
           />
         )}
 
-        {item.file && item.file.includes("postVideos") && (
+        {item?.file && item?.file.includes("postVideos") && (
           <Video
             style={[styles.postMedia, { height: hp(30) }]}
             source={getSupabaseFileUrl(item.file)}
@@ -141,15 +148,19 @@ export default function PostCard({
           <Text style={styles.count}>{likes?.length}</Text>
         </View>
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={openPostDetails}>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
           <Text style={styles.count}>{0}</Text>
         </View>
         <View style={styles.footerButton}>
-          <TouchableOpacity onPress={onShare}>
-            <Icon name="share" size={24} color={theme.colors.textLight} />
-          </TouchableOpacity>
+          {loading ? (
+            <Loading size="small" />
+          ) : (
+            <TouchableOpacity onPress={onShare}>
+              <Icon name="share" size={24} color={theme.colors.textLight} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
