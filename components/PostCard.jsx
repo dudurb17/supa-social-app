@@ -81,6 +81,7 @@ export default function PostCard({
     Share.share(content);
   };
 
+  console.log(item);
   const createAt = moment(item?.created_at).format("MMM D");
   const liked = likes?.filter((like) => like.userId == currentUser.id)[0]
     ? true
@@ -151,7 +152,7 @@ export default function PostCard({
           <TouchableOpacity onPress={openPostDetails}>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
-          <Text style={styles.count}>{0}</Text>
+          <Text style={styles.count}>{item.comments[0].count}</Text>
         </View>
         <View style={styles.footerButton}>
           {loading ? (
