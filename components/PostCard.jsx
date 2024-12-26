@@ -70,7 +70,7 @@ export default function PostCard({
 
   const onShare = async () => {
     let content = { message: item?.body };
-    console.log(item?.file);
+    // console.log(item?.file);
 
     if (item?.file) {
       setLoading(true);
@@ -81,7 +81,7 @@ export default function PostCard({
     Share.share(content);
   };
 
-  console.log(item);
+  // console.log(item);
   const createAt = moment(item?.created_at).format("MMM D");
   const liked = likes?.filter((like) => like.userId == currentUser.id)[0]
     ? true
