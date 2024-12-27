@@ -36,8 +36,17 @@ export default function Home() {
     if (payload.eventType == "INSERT" && payload.new.id) {
       let newPost = { ...payload.new };
       let res = await getUserData(newPost.userId);
+      newPost.postLikes = [];
+      newPost.comments = [{ count: 0 }];
       newPost.user = res.success ? res.data : {};
       setPosts((prev) => [newPost, ...prev]);
+    }
+
+    if (payload.eventType == "DELETE" && payload.old.id) {
+      setPosts((prevPosts) => {
+        let updatePosts = prevPosts.filter((post) => post.id != payload.old.id);
+        return updatePosts;
+      });
     }
   };
 

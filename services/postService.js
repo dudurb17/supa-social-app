@@ -152,3 +152,23 @@ export const removeComment = async (commentId) => {
     return { sucess: false, msg: "Could not remove the comment" };
   }
 };
+
+export const removePost = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", postId)
+
+    if (error) {
+      console.log("removePost error: ", error);
+      return { success: false, msg: "Could not remove the post " };
+    }
+
+    return { success: true, data: {postId} };
+  } catch (error) {
+    console.log("removeComment error: ", error);
+    return { sucess: false, msg: "Could not remove the comment" };
+  }
+};
+

@@ -25,6 +25,9 @@ export default function PostCard({
   router,
   hasShadow = true,
   showMoreIcon = true,
+  showDelete = false,
+  onDelete = () => {},
+  onEdit = () => {},
 }) {
   const [likes, setLikes] = useState();
   const [loading, setLoading] = useState(false);
@@ -62,6 +65,20 @@ export default function PostCard({
         Alert.alert("Post", "Something went wrong!");
       }
     }
+  };
+  const handlePostDelete = () => {
+    Alert.alert("Confirm", "Are you sure you want to do this ?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("modal cancelled"),
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => onDelete(item),
+        style: "destructive",
+      },
+    ]);
   };
 
   const openPostDetails = () => {
@@ -110,6 +127,27 @@ export default function PostCard({
               color={theme.colors.text}
             />
           </TouchableOpacity>
+        )}
+
+        {showDelete && currentUser.id == item.userId && (
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => onEdit(item)}>
+              <Icon
+                name="edit"
+                size={hp(2.5)}
+                stokeWidth={3}
+                color={theme.colors.text}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handlePostDelete}>
+              <Icon
+                name="delete"
+                size={hp(2.5)}
+                stokeWidth={3}
+                color={theme.colors.rose}
+              />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
