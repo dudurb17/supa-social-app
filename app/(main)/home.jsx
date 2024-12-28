@@ -28,8 +28,6 @@ export default function Home() {
 
   const [hasMore, setHasMore] = useState(true);
 
-  // console.log("user: ", user);
-
   const [posts, setPosts] = useState([]);
 
   const handlePostEvent = async (payload) => {

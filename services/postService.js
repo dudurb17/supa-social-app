@@ -30,9 +30,27 @@ export const createOrUpdatePost = async (post) => {
   }
 };
 
-export const fetchPosts = async (limit = 10) => {
+export const fetchPosts = async (limit = 10, userId) => {
   try {
-    const { data, error } = await supabase
+    if( userId){
+      const { data, error } = await supabase
+      .from("posts")
+      .select(
+        `*, user: users (id, name, image), postLikes (*), comments (count)`
+      )
+      .eq('userId', userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.log("FetchPosts error: ", error);
+      return { success: false, msg: "Could not fetch the" };
+    }
+
+    return { success: true, data: data };
+
+    }else {
+      const { data, error } = await supabase
       .from("posts")
       .select(
         `*, user: users (id, name, image), postLikes (*), comments (count)`
@@ -46,6 +64,8 @@ export const fetchPosts = async (limit = 10) => {
     }
 
     return { success: true, data: data };
+    }
+   
   } catch (error) {
     console.log("fetchPosts error: ", error);
     return { sucess: false, msg: "Could not fetch posts" };
