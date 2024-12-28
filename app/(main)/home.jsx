@@ -48,6 +48,18 @@ export default function Home() {
         return updatePosts;
       });
     }
+    if (payload.eventType == "UPDATE" && payload.new.id) {
+      setPosts((prevPosts) => {
+        let updatePosts = prevPosts.map((post) => {
+          if (post.id == payload.new.id) {
+            post.body = payload.new.body;
+            post.file = payload.new.file;
+          }
+          return post;
+        });
+        return updatePosts;
+      });
+    }
   };
 
   useEffect(() => {

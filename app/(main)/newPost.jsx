@@ -9,14 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import Header from "../../components/Header";
 import { hp, wp } from "../../helpers/common";
 import { theme } from "../../constants/theme";
 import Avatar from "../../components/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import * as ImagePicker from "expo-image-picker";
@@ -26,13 +26,20 @@ import { Video } from "expo-av";
 import { createOrUpdatePost } from "../../services/postService";
 
 export default function NewPost() {
+  const post = useLocalSearchParams();
   const { user } = useAuth();
 
-  const bodyRef = useRef("");
+  const [body, setBody] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(file);
 
+  useEffect(() => {
+    if (post && post.id) {
+      setBody(post.body || "");
+      setFile(post.file ? { uri: getSupabaseFileUrl(post.file).uri } : null);
+    }
+  }, []);
   const onPick = async (isImage) => {
     let mediaConfig = {
       mediaTypes: [isImage ? "images" : "videos"],
@@ -68,22 +75,25 @@ export default function NewPost() {
   const getFileUri = (file) => {
     if (!file) return null;
     if (isLocalFile(file)) {
-      return file.uri;
+      return { uri: file.uri };
     }
     return getSupabaseFileUrl(file?.uri);
   };
 
   const onSubmit = async () => {
-    if (!bodyRef.current && !file) {
+    if (!body && !file) {
       Alert.alert("Post", "Please chose an image or add post bod");
     }
 
     let data = {
       file,
-      body: bodyRef.current,
+      body: body,
       userId: user.id,
     };
 
+    if (post && post.id) {
+      data.id = post.id;
+    }
     // create post
     setLoading(true);
 
@@ -92,7 +102,7 @@ export default function NewPost() {
 
     if (response.success) {
       setFile(null);
-      bodyRef.current = "";
+      setBody("");
       router.back();
     } else {
       Alert.alert("Post", response.msg);
@@ -116,10 +126,10 @@ export default function NewPost() {
             <Input
               placeholder="What's on your mind?"
               multilineStyle={{ height: hp(20), alignItems: "flex-start" }}
-              value={bodyRef}
+              value={body}
               multiline={true}
               contianerStyles={styles.bio}
-              onChangeText={(value) => (bodyRef.current = value)}
+              onChangeText={(value) => setBody(value)}
             />
           </View>
 
@@ -128,14 +138,14 @@ export default function NewPost() {
               {getFileType(file) == "video" ? (
                 <Video
                   style={{ flex: 1 }}
-                  source={{ uri: getFileUri(file) }}
+                  source={getFileUri(file)}
                   useNativeControls
                   resizeMode="cover"
                   isLooping
                 />
               ) : (
                 <Image
-                  source={{ uri: getFileUri(file) }}
+                  source={getFileUri(file)}
                   resizeMode="cover"
                   style={{ flex: 1 }}
                 />
@@ -160,7 +170,7 @@ export default function NewPost() {
         </ScrollView>
         <Button
           buttonStyle={{ height: hp(6.2) }}
-          title="Post"
+          title={post && post.id ? "Update" : "Post"}
           loading={loading}
           hasShadow={false}
           onPress={onSubmit}
