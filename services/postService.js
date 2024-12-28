@@ -107,7 +107,7 @@ export const createComment = async (comment) => {
       return { success: false, msg: "Could not create your comment" };
     }
 
-    return { success: true };
+    return { success: true, data: data };
   } catch (error) {
     console.log("Comment error: ", error);
     return { sucess: false, msg: "Could not create your comment" };

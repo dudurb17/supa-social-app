@@ -24,6 +24,7 @@ import Icon from "../../assets/icons";
 import CommentItem from "../../components/CommentItem";
 import { supabase } from "../../lib/supabase";
 import { getUserData } from "../../services/userService";
+import { createNotification } from "../../services/notificationService";
 
 export default function PostDetails() {
   const { postId } = useLocalSearchParams();
@@ -67,7 +68,20 @@ export default function PostDetails() {
     const res = await createComment(data);
     console.log("teste");
     setLoading(false);
+    console.log("noti1");
+
     if (res.success) {
+      if (user.id != post.userId) {
+        console.log("noti");
+        console.log(res);
+        let notify = {
+          senderId: user.id,
+          receiverId: post.userId,
+          title: "commented on your post",
+          data: JSON.stringify({ postId: post.id, commentId: res.data.id }),
+        };
+        createNotification(notify);
+      }
       inputRef.current.clear();
       commentRef.current = "";
     } else {
