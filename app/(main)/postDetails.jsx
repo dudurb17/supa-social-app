@@ -89,19 +89,32 @@ export default function PostDetails() {
     }
   };
   const handleNewComment = async (payload) => {
-    console.log("Got new comment", payload.new);
-    if (payload.new) {
+    console.log("Got new comment", payload);
+    if (payload.eventType === "INSERT" && payload.new.id) {
       let newComment = { ...payload.new };
       let res = await getUserData(newComment.userId);
       newComment.user = res.success ? res.data : {};
       setPost((prev) => {
-        return { ...prev, comments: [newComment, ...prev.comments] };
+        return {
+          ...prev,
+          comments: [newComment, ...prev.comments],
+        };
+      });
+    }
+    if (payload.eventType === "DELETE" && payload.old.id) {
+      console.log("delete");
+      setPost((prevPost) => {
+        let updatedPost = { ...prevPost };
+        updatedPost.comments = updatedPost.comments.filter(
+          (c) => c.id !== payload.old.id
+        );
+        return updatedPost;
       });
     }
   };
 
   useEffect(() => {
-    let commentChannel = supabase
+    let insertChannel = supabase
       .channel("comments")
       .on(
         "postgres_changes",
@@ -114,11 +127,24 @@ export default function PostDetails() {
         handleNewComment
       )
       .subscribe();
+    let deleteChannel = supabase
+      .channel("comments-delete")
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "comments",
+        },
+        handleNewComment
+      )
+      .subscribe();
 
     getPostDetails();
 
     return () => {
-      supabase.removeChannel(commentChannel);
+      supabase.removeChannel(insertChannel);
+      supabase.removeChannel(deleteChannel);
     };
   }, [postId]);
 
