@@ -10,6 +10,7 @@ export default function CommentItem({
   item,
   canDelete = false,
   onDelete = () => {},
+  highlight = false,
 }) {
   const createdAt = moment(item.created_at).format("MMM d");
 
@@ -30,7 +31,7 @@ export default function CommentItem({
   return (
     <View style={styles.container}>
       <Avatar uri={item.user.image} />
-      <View style={styles.content}>
+      <View style={[styles.content, highlight && styles.highLight]}>
         <View
           style={{
             flexDirection: "row",

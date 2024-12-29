@@ -27,7 +27,7 @@ import { getUserData } from "../../services/userService";
 import { createNotification } from "../../services/notificationService";
 
 export default function PostDetails() {
-  const { postId } = useLocalSearchParams();
+  const { postId, commentId } = useLocalSearchParams();
   const { user } = useAuth();
   const router = useRouter();
   const [startLoading, setStartLoading] = useState(true);
@@ -222,6 +222,7 @@ export default function PostDetails() {
               item={comment}
               key={comment.id.toString()}
               onDelete={onDeleteComment}
+              highlight={comment.id == commentId}
               canDelete={user.id == comment.userId || user.id == post.userId}
             />
           ))}

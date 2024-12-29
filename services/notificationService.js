@@ -28,8 +28,7 @@ export const fetchNotifications = async (receiverId) => {
         `*, sender: senderId(id, name, image)`
       )
       .eq("receiverId", receiverId)
-      .order("created_at", { ascending: false})
-      .single();
+      .order("created_at", { ascending: false});
 
     if (error) {
       console.log("FetchPostDetails error: ", error);

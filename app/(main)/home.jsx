@@ -27,6 +27,7 @@ export default function Home() {
   const router = useRouter();
 
   const [hasMore, setHasMore] = useState(true);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const [posts, setPosts] = useState([]);
 
@@ -60,6 +61,13 @@ export default function Home() {
     }
   };
 
+  const handleNewNotification = async (payload) => {
+    console.log(payload);
+    if (payload.eventType == "INSERT" && payload.new.id) {
+      setNotificationCount((prev) => prev + 1);
+    }
+  };
+
   useEffect(() => {
     let postChannel = supabase
       .channel("posts")
@@ -69,10 +77,25 @@ export default function Home() {
         handlePostEvent
       )
       .subscribe();
+
+    let notificationChanel = supabase
+      .channel("notifications")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `receiverId=eq.${user.id}`,
+        },
+        handleNewNotification
+      )
+      .subscribe();
     // getPosts();
 
     return () => {
       supabase.removeChannel(postChannel);
+      supabase.removeChannel(notificationChanel);
     };
   }, []);
 
@@ -106,6 +129,11 @@ export default function Home() {
                 strokeWidth={2}
                 color={theme.colors.text}
               />
+              {notificationCount > 0 && (
+                <View style={styles.pill}>
+                  <Text style={styles.pillText}>{notificationCount}</Text>
+                </View>
+              )}
             </Pressable>
             <Pressable onPress={() => router.push("newPost")}>
               <Icon
@@ -198,5 +226,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -10,
     top: -4,
+  },
+  pillText: {
+    color: "white",
+    fontSize: hp(1.2),
+    fontWeight: theme.fonts.bold,
   },
 });
